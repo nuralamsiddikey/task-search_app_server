@@ -2,7 +2,7 @@ import BaseRepository from '../base/baseRepository.js';
 import { Product } from './product.model.js';
 import sequelize from 'sequelize';
 const { Op } = sequelize;
-  
+
 class ProductRepository extends BaseRepository {
   #model;
   constructor(model) {
@@ -11,19 +11,21 @@ class ProductRepository extends BaseRepository {
   }
 
   async searchProducts(reqQuery) {
-    const { page, limit=10, order, query } = reqQuery;
+    const { page, limit, order, query } = reqQuery;
     const paginationQuery = { page, limit, order };
 
+    if (!query || query.trim() === "") {
+      return { data: [], total: 0 };
+  }
+
     const whereQuery = {
-      ...(query && {
-        [Op.or]: [
-          { title: { [Op.substring]: query } },
-          { description: { [Op.substring]: query } },
-        ],
-      }),
+      [Op.or]: [
+        { title: { [Op.substring]: query } },
+        { description: { [Op.substring]: query } },
+      ],
     };
 
-    const products = await super.findByPagination(paginationQuery,whereQuery);
+    const products = await super.findByPagination(paginationQuery, whereQuery);
 
     return products;
   }
