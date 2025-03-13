@@ -14,10 +14,6 @@ class ProductRepository extends BaseRepository {
     const { page, limit, order, query } = reqQuery;
     const paginationQuery = { page, limit, order };
 
-    if (!query || query.trim() === "") {
-      return { data: [], total: 0 };
-  }
-
     const whereQuery = {
       [Op.or]: [
         { title: { [Op.substring]: query } },
